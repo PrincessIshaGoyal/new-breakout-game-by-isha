@@ -1,14 +1,13 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
+    <title>New Breeakout Game By Isha</title>
     <style>
       * {
         padding: 0;
         margin: 0;
       }
       canvas {
-        background: #eee;
         display: block;
         margin: 0;
       }
@@ -31,8 +30,16 @@ function getRandomColor() {
     return color;
 }
 
+function getRandomBG() {
+  let names = ['a','b','c','d'];
+  return "bgs/" + names[Math.floor(Math.random() * 4)] + ".jpg";
+}
+
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
+
+const img = new Image();
+img.src = getRandomBG();
 
 let x = canvas.width/2;
 let y = canvas.height - 30;
@@ -51,6 +58,7 @@ let time = [0, 0];
 let ballcolor = getRandomColor();
 let inerval;
 let time_interval;
+let current_drop = [None, 0];
 
 const brickRowCount = 12;
 const brickColumnCount = 18;
@@ -59,6 +67,7 @@ const brickHeight = 20;
 const brickPadding = 8;
 const brickOffsetTop = 20;
 const brickOffsetLeft = 10;
+const power_ups = ["square", "circle"];
 
 const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
@@ -109,19 +118,17 @@ function drawScore() {
 }
 
 function drawTimer() {
-  ctx.beginPath();
-  ctx.arc(60, 580, 50, 0, Math.PI * 2);
-  ctx.fillStyle = "pink";
-  ctx.fill();
-  ctx.closePath();
   ctx.font = "16px Arial";
   ctx.fillStyle = "#0095DD";
-  ctx.fillText(`${time[0]}:${time[1]}`, 60, 580);
-  
+  ctx.fillText(`${time[0]}:${time[1]}`, 10, 630);
+}
+
+function dropPowerUp() {
+  current_drop[0] = power_ups[Math.floor(Math.random() * 2)];
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   drawTimer();
   drawBricks();
   drawBall();
@@ -138,6 +145,17 @@ function draw() {
     if (x >= paddleX && x < paddleX + paddleWidth) {
       dy = -dy;
     } else {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      ctx.font = "110px Comic Sans MS";
+      ctx.fillStyle = "White";
+      ctx.fillText(`Game Over`, 0, 270);
+
+      ctx.font = "50px Comic Sans MS";
+      ctx.fillStyle = "White";
+      ctx.fillText(`Score: ${score}`, 0, 325);
+      ctx.fillText(`Time: ${time[0]} minutes ${time[1]} seconds`, 0, 380);
+
       document.getElementById("game_status").innerHTML = `Status : Game Over, Please wait while we reload!`;
       clearInterval(interval);
       clearInterval(time_interval);
@@ -195,6 +213,17 @@ function collisionDetection() {
           score++;
 
           if (status_0()) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            ctx.font = "110px Comic Sans MS";
+            ctx.fillStyle = "White";
+            ctx.fillText(`CONGRATULATIONS!`, 0, 270);
+
+            ctx.font = "50px Comic Sans MS";
+            ctx.fillStyle = "White";
+            ctx.fillText(`Score: ${score}`, 0, 325);
+            ctx.fillText(`Time: ${time[0]} minutes ${time[1]} seconds`, 0, 380);
+
 	          document.getElementById("game_status").innerHTML = `Status : Game Completed! CONGRATULATIONS! Please wait while we reload!`;
             clearInterval(interval);
             clearInterval(time_interval);
@@ -280,11 +309,15 @@ function EnterKeyHandler(e) {
   }
 }
 
+img.onload = function() {
+ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 drawBricks();
 drawBall();
 drawPaddle();
 drawScore();
 drawTimer();
+};
+
 document.addEventListener("keydown", EnterKeyHandler, false);
 
     </script>
